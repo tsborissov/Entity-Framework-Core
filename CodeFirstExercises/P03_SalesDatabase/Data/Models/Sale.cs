@@ -18,5 +18,7 @@ namespace P03_SalesDatabase.Data.Models
         public Customer Customer { get; set; }
         public int StoreId { get; set; }
         public Store Store { get; set; }
+
+
     }
 }

@@ -28,5 +28,19 @@ namespace P03_SalesDatabase.Data
 
             base.OnConfiguring(optionsBuilder);
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Product>()
+                .Property(x => x.Description)
+                .HasMaxLength(250)
+                .HasDefaultValue("No description");
+
+            modelBuilder.Entity<Sale>()
+                .Property(x => x.Date)
+                .HasDefaultValueSql("GETDATE()");
+            
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
