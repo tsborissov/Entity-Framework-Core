@@ -17,7 +17,7 @@ namespace P01_StudentSystem.Data.Models
         public int HomeworkId { get; set; }
 
         [Required]
-        [Column(TypeName = "varchar(255)")]
+        [Column(TypeName = "varchar(max)")]
         public string Content { get; set; }
 
         public ContentType ContentType { get; set; }

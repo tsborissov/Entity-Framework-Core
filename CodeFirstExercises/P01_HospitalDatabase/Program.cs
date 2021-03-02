@@ -1,16 +1,16 @@
-﻿using P03_FootballBetting.Data;
+﻿using P01_HospitalDatabase.Data;
 using System;
 
-namespace P03_FootballBetting
+namespace P01_HospitalDatabase
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            var db = new FootballBettingContext();
+            var db = new HospitalContext();
 
-            db.Database.EnsureCreated();
             db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
         }
     }
 }

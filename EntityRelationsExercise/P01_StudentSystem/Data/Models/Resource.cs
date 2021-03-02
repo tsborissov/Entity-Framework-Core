@@ -18,12 +18,12 @@ namespace P01_StudentSystem.Data.Models
         [MaxLength(50)]
         public string Name { get; set; }
 
-        [Column(TypeName = "varchar(2048)")]
+        [Column(TypeName = "varchar(max)")]
         public string Url { get; set; }
 
         public ResourceType ResourceType { get; set; }
 
-        public int? CourseId { get; set; }
+        public int CourseId { get; set; }
 
         public virtual Course Course { get; set; }
     }

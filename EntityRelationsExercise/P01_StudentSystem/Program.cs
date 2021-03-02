@@ -10,20 +10,20 @@ namespace P01_StudentSystem
         {
             var db = new StudentSystemContext();
 
-            //db.Database.EnsureDeleted();
-            //db.Database.EnsureCreated();
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
 
-            var resource = new Resource()
-            {
-                Name = "Entity Framework Core",
-                Url = "https://docs.microsoft.com/en-us/ef/core/",
-                ResourceType = ResourceType.Other,
-                CourseId = null
-            };
+            //var resource = new Resource()
+            //{
+            //    Name = "Entity Framework Core",
+            //    Url = "https://docs.microsoft.com/en-us/ef/core/",
+            //    ResourceType = ResourceType.Other,
+            //    CourseId = null
+            //};
 
-            db.Resources.Add(resource);
+            //db.Resources.Add(resource);
 
-            db.SaveChanges();
+            //db.SaveChanges();
         }
     }
 }
