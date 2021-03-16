@@ -31,10 +31,102 @@ namespace CarDealer
             //ImportCustomers(dbContext, customersJson);
             //ImportSales(dbContext, salesJson);
 
+            var result = GetCarsWithTheirListOfParts(dbContext);
 
-            //Console.WriteLine(result);
+            Console.WriteLine(result);
+        }
+
+        public static string GetCarsWithTheirListOfParts(CarDealerContext context)
+        {
+            var cars = context.Cars
+                .Select(c => new 
+                {
+                    Make = c.Make,
+                    Model = c.Model,
+                    TravelledDistance = c.TravelledDistance,
+                    parts = c.PartCars
+                    .Select(p => new
+                    {
+                        Name = p.Part.Name,
+                        Price = p.Part.Price.ToString("F2")
+                    })
+                    .ToList()
+                })
+                .ToList();
 
 
+            var jsonSerializerSettings = new JsonSerializerSettings();
+            jsonSerializerSettings.Formatting = Formatting.Indented;
+
+            var jsonResult = JsonConvert.SerializeObject(cars, jsonSerializerSettings);
+
+            return jsonResult;
+        }
+
+        public static string GetLocalSuppliers(CarDealerContext context)
+        {
+            var targetSuppliers = context.Suppliers
+                .Where(x => x.IsImporter == false)
+                .Select(x => new
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    PartsCount = x.Parts.Count
+                })
+                .ToList();
+
+            var jsonSettings = new JsonSerializerSettings();
+            jsonSettings.Formatting = Formatting.Indented;
+
+            var jsonResult = JsonConvert.SerializeObject(targetSuppliers, jsonSettings);
+
+            return jsonResult;
+        }
+
+        public static string GetCarsFromMakeToyota(CarDealerContext context)
+        {
+            var targetCars = context.Cars
+                .Where(x => x.Make == "Toyota")
+                .Select(x => new 
+                {
+                    Id = x.Id,
+                    Make = x.Make,
+                    Model = x.Model,
+                    TravelledDistance = x.TravelledDistance
+                })
+                .OrderBy(x => x.Model)
+                .ThenByDescending(x => x.TravelledDistance)
+                .ToList();
+
+            var jsonSerializerSettings = new JsonSerializerSettings();
+            jsonSerializerSettings.Formatting = Formatting.Indented;
+
+            var jsonResult = JsonConvert.SerializeObject(targetCars, jsonSerializerSettings);
+
+
+            return jsonResult;
+        }
+
+        public static string GetOrderedCustomers(CarDealerContext context)
+        {
+            var customers = context.Customers
+                .Select(x => new
+                {
+                    Name = x.Name,
+                    BirthDate = x.BirthDate,
+                    IsYoungDriver = x.IsYoungDriver
+                })
+                .OrderBy(x => x.BirthDate)
+                .ThenBy(x => x.IsYoungDriver)
+                .ToList();
+
+            var jsonSerializerSettings = new JsonSerializerSettings();
+            jsonSerializerSettings.Formatting = Formatting.Indented;
+            jsonSerializerSettings.DateFormatString = "dd/MM/yyyy";
+
+            var resultJson = JsonConvert.SerializeObject(customers, jsonSerializerSettings);
+
+            return resultJson;
         }
 
         public static string ImportSales(CarDealerContext context, string inputJson)
@@ -44,7 +136,7 @@ namespace CarDealer
             var mapper = InitializeAutoMapper();
             var sales = mapper.Map<ICollection<Sale>>(salesDto);
 
-            context.AddRange(sales);
+            context.Sales.AddRange(sales);
             context.SaveChanges();
 
             return $"Successfully imported {sales.Count}.";
@@ -58,7 +150,7 @@ namespace CarDealer
 
             var customers = mapper.Map<ICollection<Customer>>(customersDto);
 
-            context.AddRange(customers);
+            context.Customers.AddRange(customers);
             context.SaveChanges();
 
             return $"Successfully imported {customers.Count}.";
@@ -92,7 +184,7 @@ namespace CarDealer
                 cars.Add(currentCar);
             }
 
-            context.AddRange(cars);
+            context.Cars.AddRange(cars);
             context.SaveChanges();
 
             return $"Successfully imported {cars.Count}.";
@@ -109,7 +201,7 @@ namespace CarDealer
             var mapper = InitializeAutoMapper();
             var parts = mapper.Map<ICollection<Part>>(dtoParts);
 
-            context.AddRange(parts);
+            context.Parts.AddRange(parts);
             var resultCount = context.SaveChanges();
 
             return $"Successfully imported {resultCount}.";
@@ -122,7 +214,7 @@ namespace CarDealer
             var mapper = InitializeAutoMapper();
             var suppliers = mapper.Map<ICollection<Supplier>>(dtoSuppliers);
 
-            context.AddRange(suppliers);
+            context.Suppliers.AddRange(suppliers);
             var suppliersCount = context.SaveChanges();
             
 
