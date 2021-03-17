@@ -7,6 +7,7 @@ using CarDealer.Data;
 using CarDealer.DTO;
 using CarDealer.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace CarDealer
 {
@@ -36,14 +37,68 @@ namespace CarDealer
             Console.WriteLine(result);
         }
 
+        public static string GetSalesWithAppliedDiscount(CarDealerContext context)
+        {
+            var sales = context.Sales
+                .Select(x => new
+                {
+                    car = new
+                    {
+                        Make = x.Car.Make,
+                        Model = x.Car.Model,
+                        TravelledDistance = x.Car.TravelledDistance
+                    },
+                    customerName = x.Customer.Name,
+                    Discount = x.Discount.ToString("F2"),
+                    price = x.Car.PartCars.Sum(p => p.Part.Price).ToString("F2"),
+                    priceWithDiscount = (x.Car.PartCars.Sum(p => p.Part.Price) * (1 - x.Discount / 100)).ToString("F2")
+                })
+                .Take(10)
+                .ToList();
+
+            var jsonSerializerSettings = new JsonSerializerSettings();
+            jsonSerializerSettings.Formatting = Formatting.Indented;
+            //jsonSerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            var jsonResult = JsonConvert.SerializeObject(sales, jsonSerializerSettings);
+
+            return jsonResult;
+        }
+
+        public static string GetTotalSalesByCustomer(CarDealerContext context)
+        {
+            var customers = context.Customers
+                .Where(x => x.Sales.Count > 0)
+                .Select(x => new
+                {
+                    FullName = x.Name,
+                    BoughtCars = x.Sales.Count,
+                    SpentMoney = x.Sales.Sum(s => s.Car.PartCars.Sum(p => p.Part.Price))
+                })
+                .OrderByDescending(x => x.SpentMoney)
+                .ThenByDescending(x => x.BoughtCars)
+                .ToList();
+
+            var jsonSerializerSettings = new JsonSerializerSettings();
+            jsonSerializerSettings.Formatting = Formatting.Indented;
+            jsonSerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            var jsonResult = JsonConvert.SerializeObject(customers, jsonSerializerSettings);
+
+            return jsonResult;
+        }
+
         public static string GetCarsWithTheirListOfParts(CarDealerContext context)
         {
             var cars = context.Cars
                 .Select(c => new 
                 {
-                    Make = c.Make,
-                    Model = c.Model,
-                    TravelledDistance = c.TravelledDistance,
+                    car = new 
+                    {
+                        Make = c.Make,
+                        Model = c.Model,
+                        TravelledDistance = c.TravelledDistance
+                    },
                     parts = c.PartCars
                     .Select(p => new
                     {
