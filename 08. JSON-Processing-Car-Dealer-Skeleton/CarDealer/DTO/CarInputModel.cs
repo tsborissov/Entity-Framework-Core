@@ -8,7 +8,7 @@ namespace CarDealer.DTO
     {
         public CarInputModel()
         {
-            this.PartsId = new HashSet<int>();
+            this.PartsIds = new HashSet<int>();
         }
         
         public string Make { get; set; }
@@ -17,6 +17,6 @@ namespace CarDealer.DTO
 
         public long TravelledDistance { get; set; }
 
-        public ICollection<int> PartsId { get; set; }
+        public ICollection<int> PartsIds { get; set; }
     }
 }

@@ -32,9 +32,9 @@ namespace CarDealer
             //ImportCustomers(dbContext, customersJson);
             //ImportSales(dbContext, salesJson);
 
-            var result = GetCarsWithTheirListOfParts(dbContext);
+            //var result = GetCarsWithTheirListOfParts(dbContext);
 
-            Console.WriteLine(result);
+            //Console.WriteLine(result);
         }
 
         public static string GetSalesWithAppliedDiscount(CarDealerContext context)
@@ -226,7 +226,7 @@ namespace CarDealer
                     TravelledDistance = dtoCar.TravelledDistance
                 };
 
-                foreach (var dtoPart in dtoCar.PartsId.Distinct())
+                foreach (var dtoPart in dtoCar.PartsIds.Distinct())
                 {
                     var currentPartCar = new PartCar
                     {
